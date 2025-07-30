@@ -1,0 +1,5 @@
+pandas
+spacy
+nltk
+scikit-learn
+matplotlib
