@@ -1,136 +1,122 @@
-# Pretraitement NLP 🧠
 
-This project provides a modular and extensible **NLP preprocessing pipeline** for the cleaning, topic modeling, and analysis of Reddit-style comment datasets.
+# NLP Topic Modeling Preprocessing Pipeline
 
-The pipeline is structured around **best software engineering practices**, including modularity, testability, and configuration-driven execution.
-
----
-
-## 📌 Features
-
-- **Cleaning pipeline**: text normalization, lemmatization (spaCy), stopwords filtering (custom + NLTK)
-- **Topic modeling**: using BERTopic + Sentence Transformers
-- **Topic analytics**: evaluation across multiple topic numbers via KMeans
-- **Modular architecture**: every processing step is decoupled in its own module
-- **CLI interface**: run entire pipeline via a config file
-- **Automatic results folder**: timestamped output directory
-- **GitHub-ready**: includes `.gitignore`, `requirements.txt`, `README`, `config.json.exemple`
+This repository contains a robust and modular pipeline for **text preprocessing**, **topic modeling** with BERTopic, and **interactive result exploration** via a Streamlit dashboard.  
+It is designed for high-throughput, reproducible experiments on raw text data (e.g., surveys, user feedback, or transcripts).
 
 ---
 
-## 🧭 Project Structure
+## 🧰 Features
 
-```
-pretraitement_nlp/
-├── cleaning.py               # Data cleaning module
-├── topic_modeling.py         # BERTopic modeling module
-├── analytics.py              # Topic analysis via KMeans
-├── pipeline.py               # Pipeline orchestration
-├── __init__.py               # (empty or optional)
-cli.py                        # CLI script entrypoint
-config.json.exemple           # Sample configuration
-inputs/                       # Input CSVs (user-provided)
-results/                      # Output folder (auto-organized by date)
-requirements.txt              # Python dependencies
-README.md                     # This documentation
-.gitignore                    # Git exclusions
-```
-
----
-
-## ⚙️ Configuration
-
-The pipeline uses a single `config.json` file for all input/output paths.
-
-Create your own `config.json` by copying the template:
-
-```bash
-cp config.json.exemple config.json
-```
-
-Then edit it:
-
-```json
-{
-    "input_path": "inputs/comments.csv",
-    "output_dir": "results"
-}
-```
+- 📄 Preprocessing of raw textual data (cleaning, normalization, lemmatization, etc.)
+- 🔎 Topic modeling using BERTopic (with KMeans-based variants)
+- 📁 Fully automated file structure with time-stamped outputs
+- 📊 Interactive dashboard for in-depth topic exploration
+- 🔧 Configurable pipeline via `config.json`
+- ⚙️ Easily extendable and modular codebase
+- ✅ MIT License — open to academic and commercial reuse
 
 ---
 
 ## 🚀 Usage
 
-1. Install dependencies (in a virtualenv recommended):
+### 1. Setup
+
+Clone the repository and install dependencies:
 
 ```bash
 pip install -r requirements.txt
 ```
 
-2. Place your raw comment data (CSV with a column `comment`) in the `inputs/` folder.
+### 2. Configure your pipeline
 
-3. Run the pipeline:
+```json
+{
+  "input_path": "input/my_data.csv",
+  "output_dir": "results",
+  "launch_dashboard": true
+}
+```
+
+- `input_path`: path to your CSV file (must contain a `comment` column)
+- `output_dir`: root folder where outputs will be saved
+- `launch_dashboard`: if `true`, opens the Streamlit dashboard in your browser at the end of processing
+
+---
+
+### 3. Run the pipeline
 
 ```bash
 python cli.py
 ```
 
-By default, this uses `config.json` at the project root. You can specify another file:
+This will:
 
-```bash
-python cli.py --config path/to/config.json
+- Clean your data
+- Run BERTopic with multiple values of `k`
+- Save results and visualizations
+- Optionally launch the dashboard
+
+---
+
+## 📊 Dashboard Overview
+
+If `launch_dashboard = true`, the pipeline ends by launching a **Streamlit dashboard** that provides:
+
+### Sidebar
+
+- Selection of results folder
+- Dynamic dropdown to select number of topics (`k`)
+- Stop button to exit cleanly
+
+### Main Interface
+
+- 📌 Pipeline summary: number of documents, topics, unassigned documents
+- 🔍 Search: filter documents by keyword
+- 🧠 Topic explorer: view documents assigned to a given topic
+- 📈 Topic summary table
+- 🌐 Interactive visualizations:
+  - `topics_visualization.html` (global clustering)
+  - `IDM_kX.html` (specific to selected `k`)
+
+---
+
+## 📁 Output Structure
+
+After each run, a new subfolder is created under `results/YYYY-MM-DD/HH-MM-SS/` containing:
+
+```
+results/
+└── 2025-07-30/
+    └── 15-42-10/
+        ├── cleaned/
+        │   └── cleaned_data.csv
+        ├── topics/
+        │   ├── topics.csv
+        │   ├── summary_topics.csv
+        │   └── topics_visualization.html
+        ├── analytics/
+        │   └── k10/
+        │       ├── summary_topics.csv
+        │       └── IDM_k10.html
+        └── config_used.json
 ```
 
 ---
 
-## 🧼 Cleaning Logic
+## 🧪 Requirements
 
-- Lowercasing
-- Removal of punctuation/special characters
-- Lemmatization using `spaCy` (`en_core_web_sm`)
-- Stopwords removed using:
-  - NLTK default English stopwords
-  - Custom set (e.g., "https", ".com", etc.)
+- Python ≥ 3.8
+- `bertopic`, `sentence-transformers`, `streamlit`, `scikit-learn`, `pandas`, `umap-learn`, `matplotlib`
 
 ---
 
-## 🧠 Topic Modeling
+## 📜 License
 
-Uses [BERTopic](https://maartengr.github.io/BERTopic/) with `SentenceTransformer("all-MiniLM-L6-v2")`.
-
-- Fit topic model using contextual embeddings
-- Save HTML visualization of topics
-- Export per-document topic assignments
+This project is licensed under the **MIT License** — you are free to use, modify, and redistribute it for academic and commercial purposes. See [`LICENSE`](LICENSE) for details.
 
 ---
 
-## 📊 Topic Analytics
+## 🤝 Contributions
 
-Evaluate different values of `k` for topic clustering (e.g., 8–15):
-
-- Applies `KMeans(n_clusters=k)`
-- Fits `BERTopic` with custom clustering
-- Generates `IDM_k{k}.html` and CSV summary for each `k`
-
----
-
-## 🧪 Future Extensions
-
-- Add unit tests for each module
-- Deploy as a Python package (`setup.py` or `pyproject.toml`)
-- Add language support / multilingual embeddings
-- Create a Streamlit dashboard to explore results
-
----
-
-## 👤 Authors
-
-- **Original scripts**: Provided by project owner
-- **Refactoring and modularization**: GPT-4 (OpenAI) under PhD instruction context
-
----
-
-## 📁 License
-
-This project is released under a license of your choice (e.g., MIT, Apache-2.0).
-
+Contributions are welcome. Please submit pull requests with detailed commit messages and test your changes locally.
